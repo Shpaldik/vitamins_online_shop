@@ -6,6 +6,7 @@ use App\Filament\Resources\ProductResource\Pages;
 use App\Models\Product;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Pages\Actions\ButtonAction;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -73,6 +74,8 @@ class ProductResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make()->label('Редактировать'),
+                Tables\Actions\DeleteAction::make()->label('Удалить'),
+                Tables\Actions\ViewAction::make()->label('Просмотреть')
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
