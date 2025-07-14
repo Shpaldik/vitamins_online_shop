@@ -2,6 +2,7 @@ import {createRouter, createWebHistory} from 'vue-router';
 import Main from '../src/views/Main.vue';
 import Policy from '../src/views/Policy.vue';
 import Products from '../src/views/Products.vue';
+import ProductPage from '../src/views/ProductsPage.vue';
 
 const routes = [
     {
@@ -18,6 +19,12 @@ const routes = [
         path: '/products',
         name: 'Политика конфиденциальности',
         component: Products,
+    },
+    {
+        path: '/products/:id',
+        name: 'Продукт',
+        component: ProductPage,
+        props: true,
     }
 ]
 
