@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import Header from '@/components/Header.vue'
+import Footer from '@/components/Footer.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -14,7 +15,9 @@ const product = ref<Product | null>(null)
 
 onMounted(async () => {
   try {
-    const response = await axios.get<Product>(`http://127.0.0.1:8000/api/products/${route.params.id}`)
+    const response = await axios.get<Product>(
+      `http://127.0.0.1:8000/api/products/${route.params.id}`
+    )
     product.value = response.data
   } catch (error) {
     console.error('Ошибка при загрузке товара:', error)
@@ -28,41 +31,76 @@ const goBack = () => {
 
 <template>
   <Header />
-  <section class="min-h-screen mt-20 px-4 sm:px-6 lg:px-8 py-12 bg-gradient-to-b from-white to-gray-50">
-    <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-start animate-fade-in">
-      <!-- Изображение -->
-      <div class="overflow-hidden rounded-3xl shadow-xl border bg-white">
-        <img
-          v-if="product"
-          :src="`http://localhost:8000/storage/${product.image}`"
-          alt="product"
-          class="w-full object-cover h-auto transition-transform hover:scale-105 duration-500"
-        />
-        <Skeleton v-else class="w-full h-auto rounded-3xl" />
-      </div>
 
-      <!-- Информация -->
-      <div v-if="product" class="space-y-6">
-        <div>
-          <h1 class="text-4xl font-extrabold tracking-tight">Название: {{ product.name }}</h1>
-          <p class="text-muted-foreground mt-2 text-lg">Описание: {{ product.description }}</p>
+  <section class="min-h-screen mt-24 px-4 sm:px-8 lg:px-16 py-16 bg-white">
+    <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-start animate-fade-in">
+
+      <!-- Изображения -->
+      <div class="flex flex-col lg:flex-row gap-6">
+        <!-- Галерея -->
+        <div
+          v-if="product?.images?.length > 1"
+          class="flex lg:flex-col gap-3 lg:overflow-y-auto max-h-[480px] pr-1"
+        >
+          <img
+            v-for="(img, idx) in product.images"
+            :key="idx"
+            :src="`http://localhost:8000/storage/${img}`"
+            class="w-20 h-20 object-cover rounded-lg border hover:ring-2 ring-primary cursor-pointer transition hover:scale-105"
+            alt="Миниатюра"
+          />
         </div>
 
-        <div class="flex flex-wrap items-center gap-2">
+        <!-- Главное изображение -->
+        <div class="flex-1 rounded-2xl shadow-md border bg-white min-h-[400px] flex items-center justify-center">
+          <img
+            v-if="product?.images?.length"
+            :src="`http://localhost:8000/storage/${product.images[0]}`"
+            alt="Изображение товара"
+            class="max-h-[460px] w-auto object-contain transition-transform hover:scale-105 duration-500"
+          />
+          <Skeleton v-else class="w-full h-[400px] rounded-2xl" />
+        </div>
+      </div>
+
+      <!-- Детали товара -->
+      <div v-if="product" class="space-y-6">
+        <div>
+          <h1 class="text-3xl font-semibold tracking-tight text-gray-900">{{ product.name }}</h1>
+          <p class="text-gray-500 mt-2 text-base leading-relaxed">{{ product.description }}</p>
+        </div>
+
+        <!-- Метки -->
+        <div class="flex flex-wrap gap-2">
           <Badge variant="secondary">{{ product.category }}</Badge>
           <Badge variant="outline">{{ product.series }}</Badge>
           <Badge>{{ product.age_group }}+</Badge>
         </div>
 
-        <div class="text-3xl font-bold text-primary mt-4">
-          Цена: {{ product.price }} рублей
+        <!-- Инструкция -->
+        <div v-if="product.instruction_file">
+          <a
+            :href="`http://localhost:8000/storage/${product.instruction_file}`"
+            target="_blank"
+            download
+            class="text-sm text-primary hover:underline"
+          >
+            📄 Скачать инструкцию
+          </a>
         </div>
 
-        <div class="grid grid-cols-2 gap-4 text-sm text-gray-600">
-          <div><span class="font-semibold">Возраст:</span> {{ product.age_group }}</div>
-          <div><span class="font-semibold">Таблеток:</span> {{ product.tablet_count }}</div>
+        <!-- Цена -->
+        <div class="text-2xl font-bold text-primary mt-4">
+          {{ product.price }} ₽
         </div>
 
+        <!-- Характеристики -->
+        <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-gray-600 mt-2">
+          <div><span class="font-medium text-gray-700">Возраст:</span> {{ product.age_group }}</div>
+          <div><span class="font-medium text-gray-700">Таблеток:</span> {{ product.tablet_count }}</div>
+        </div>
+
+        <!-- Кнопки -->
         <div class="flex flex-col sm:flex-row gap-4 pt-6">
           <Button variant="outline" class="w-full sm:w-auto" @click="goBack">← Назад</Button>
           <Button variant="default" class="w-full sm:w-auto">🛒 Купить</Button>
@@ -74,6 +112,7 @@ const goBack = () => {
       </div>
     </div>
   </section>
+  <Footer />
 </template>
 
 <style scoped>
@@ -87,8 +126,7 @@ const goBack = () => {
     transform: translateY(0);
   }
 }
-
 .animate-fade-in {
-  animation: fade-in 0.6s ease-out;
+  animation: fade-in 0.5s ease-out;
 }
 </style>

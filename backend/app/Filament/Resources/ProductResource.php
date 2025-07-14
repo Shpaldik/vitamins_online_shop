@@ -49,12 +49,24 @@ class ProductResource extends Resource
                     ->numeric()
                     ->label('Кол-во таблеток'),
 
-                Forms\Components\FileUpload::make('image')
+                Forms\Components\FileUpload::make('images')
                     ->image()
-                    ->directory('products')
+                    ->directory('products/images')
+                    ->multiple() 
                     ->label('Изображение')
                     ->disk('public')
                     ->imagePreviewHeight('100'),
+
+                Forms\Components\FileUpload::make('instruction_file')
+                    ->label('Инструкция')
+                    ->acceptedFileTypes([
+                        'application/pdf',
+                        'application/msword',
+                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    ])
+                    ->directory('products/instructions')
+                    ->disk('public')
+                    ->downloadable(),
             ]);
     }
 

@@ -10,10 +10,15 @@ class Product extends Model
         'name',
         'description',
         'price',
-        'image',
+        'images',
+        'instruction_file',
         'category',
         'series',
         'age_group',
         'tablet_count',
+    ];
+
+    protected $casts = [
+        'images' => 'array',
     ];
 }

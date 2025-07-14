@@ -34,6 +34,8 @@ onMounted(async () => {
     const response = await axios.get<Product[]>('http://127.0.0.1:8000/api/products')
     products.value = response.data
 
+    console.log('Products:', products.value)
+
     const series = new Set<string>()
     const categories = new Set<string>()
     const people = new Set<string>()
@@ -49,6 +51,7 @@ onMounted(async () => {
       'Категория': Array.from(categories),
       'Люди': Array.from(people),
     }
+    
 
     // ❗ Инициализация модели фильтров
     filtersModel.value = Object.keys(filters.value).reduce((acc, key) => {
@@ -105,7 +108,8 @@ onMounted(async () => {
             <div class="mb-6">
               <div class="inline-flex items-center justify-center rounded-xl group-hover:bg-primary transition-colors duration-300">
                 <img
-                  :src="`http://localhost:8000/storage/${product.image}`"
+                  v-if="product.images?.length"
+                  :src="`http://localhost:8000/storage/${product.images[0]}`"
                   class="w-80 text-primary group-hover:text-white transition-colors duration-300"
                 />
               </div>
@@ -114,6 +118,7 @@ onMounted(async () => {
               <h3 class="text-lg font-semibold mb-1">{{ product.name }}</h3>
               <p class="text-muted-foreground text-sm">{{ product.description }}</p>
               <p class="font-bold mt-2 text-sm">{{ product.price }} цена</p>
+              
             </div>
             <div
               class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-primary/60 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"
