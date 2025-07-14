@@ -3,22 +3,26 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 
-const modelValue = defineModel<Record<string, string[]>>() // <-- добавляем
-
 const props = defineProps<{
+  modelValue: Record<string, string[]>
   filters: Record<string, string[]>
 }>()
 
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: Record<string, string[]>): void
+}>()
+
 function toggleOption(key: string, value: string, checked: boolean) {
-  const current = modelValue.value?.[key] || []
+  console.log('toggleOption called', { key, value, checked })
+  const current = props.modelValue[key] || []
   const updated = checked
     ? [...current, value]
     : current.filter((v) => v !== value)
 
-  modelValue.value = {
-    ...modelValue.value,
+  emit('update:modelValue', {
+    ...props.modelValue,
     [key]: updated,
-  }
+  })
 }
 </script>
 
@@ -29,7 +33,7 @@ function toggleOption(key: string, value: string, checked: boolean) {
     </CardHeader>
     <CardContent class="grid gap-6 md:grid-cols-1">
       <div v-for="(options, key) in filters" :key="key" class="space-y-2">
-        <h4 class="text-sm font-medium text-black">{{ key }}</h4>
+        <h4 class="text-sm font-medium text-black capitalize">{{ key }}</h4>
         <div
           v-for="option in options"
           :key="option"
@@ -37,8 +41,8 @@ function toggleOption(key: string, value: string, checked: boolean) {
         >
           <Checkbox
             :id="`${key}-${option}`"
-            :checked="modelValue?.[key]?.includes(option)"
-            @update:checked="toggleOption(key, option, $event)"
+            :checked="modelValue[key]?.includes(option)"
+            @change="toggleOption(key, option, $event)"
           />
           <Label :for="`${key}-${option}`" class="text-sm">{{ option }}</Label>
         </div>
